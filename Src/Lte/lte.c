@@ -195,13 +195,13 @@ void LteDealState( char * msg ,uint16_t len ){
                 }else if( findstring( msg, "Network is already opened" , len ) ){
                     LTE_STATE.Fields.OPENNETWORK = NETALREADYOPEN;
                     return;
-                }else if( findstring( msg, "+IPNETOPEN: 1" , len ) ){       //ºÜÉÙ³öÏÖÕâÖÖÇé¿öÃ»ÓÐSIM¿¨µÄÊ±ºò³öÏÖ£¿
+                }else if( findstring( msg, "+IPNETOPEN: 1" , len ) ){       //å¾ˆå°‘å‡ºçŽ°è¿™ç§æƒ…å†µæ²¡æœ‰SIMå¡çš„æ—¶å€™å‡ºçŽ°ï¼Ÿ
                     LTE_STATE.Fields.OPENNETWORK = NETOPENFAILED;
                     return;
                 }else{
                     LTE_INFO("\r\n@@@@@@@@@@@@@@@@@@IPNETOPEN OPENNETWORK Never met: %s@@@@@@@@@@@@@@@@@@\r\n", msg );
                 }
-            }else if( LTE_CURR_CTRL == QUERYNETWORK ){                            //²éÑ¯ÃüÁîÊÇ·ñÂíÉÏ·µ»ØÀ´£¿
+            }else if( LTE_CURR_CTRL == QUERYNETWORK ){                            //æŸ¥è¯¢å‘½ä»¤æ˜¯å¦é©¬ä¸Šè¿”å›žæ¥ï¼Ÿ
                 if( findstring( msg, "+IPNETOPEN: 1" , len ) ){
                     LTE_STATE.Fields.QUERYNETWORK = NETALREADYOPEN;
                     return;
@@ -221,11 +221,11 @@ void LteDealState( char * msg ,uint16_t len ){
                 if( LTE_CURR_CTRL == TCPCONN ){
                     if( findstring( msg, "+IPOPEN: 1,0" , len ) ){
                         LTE_STATE.Fields.TCPCONN = TCPCONNSUCCESS;
-                    }else if( findstring( msg, "+IPOPEN: 1,1" , len ) ){        //·þÎñÆ÷Ã»Æô¶¯£¬¿ÉÒÔ×÷Îª´íÎó±¨¸æ
-                        LTE_STATE.Fields.TCPCONN = SERVENOTSTART;				//·þÎñÆ÷Ã»Æô¶¯£¬¿ÉÒÔ×÷Îª´íÎó±¨¸æ
+                    }else if( findstring( msg, "+IPOPEN: 1,1" , len ) ){        //æœåŠ¡å™¨æ²¡å¯åŠ¨ï¼Œå¯ä»¥ä½œä¸ºé”™è¯¯æŠ¥å‘Š
+                        LTE_STATE.Fields.TCPCONN = SERVENOTSTART;				//æœåŠ¡å™¨æ²¡å¯åŠ¨ï¼Œå¯ä»¥ä½œä¸ºé”™è¯¯æŠ¥å‘Š
                     }else if( findstring( msg, "+IPOPEN: 1,2" , len ) ){
-                        LTE_STATE.Fields.TCPCONN = NETNOTSTART;				//ÍøÂçÃ»´ò¿ª£¬µÃÖ´ÐÐIPNETOPEN
-                    }else if( findstring( msg, "+IPOPEN: 1,4" , len ) ){        //²Ù×÷ÎÞÐ§£¬²»ÖªµÀÄÄÀïÓ°ÏìÁË
+                        LTE_STATE.Fields.TCPCONN = NETNOTSTART;				//ç½‘ç»œæ²¡æ‰“å¼€ï¼Œå¾—æ‰§è¡ŒIPNETOPEN
+                    }else if( findstring( msg, "+IPOPEN: 1,4" , len ) ){        //æ“ä½œæ— æ•ˆï¼Œä¸çŸ¥é“å“ªé‡Œå½±å“äº†
 //                        LTE_ABNORMAL_STATE = true;
                     }else{
                         LTE_INFO("\r\n@@@@@@@@@@@@@@@@@@IPOPEN TCPCONN Never met: %s@@@@@@@@@@@@@@@@@@\r\n", msg );
@@ -259,12 +259,12 @@ void LteDealState( char * msg ,uint16_t len ){
                     LTE_STATE.Fields.TCPSEND = SENDSUCCESS;
                     return;
                 }else if( findstring( msg, "+IPERROR: 2" , len ) ){
-                    LTE_STATE.Fields.TCPSEND = SERRORBYNETOFF;				//ÍøÂçÃ»´ò¿ª
+                    LTE_STATE.Fields.TCPSEND = SERRORBYNETOFF;				//ç½‘ç»œæ²¡æ‰“å¼€
                     return;
-                }else if( findstring( msg, "+IPERROR: 4" , len ) ){         //ÐèÒªÑéÖ¤½á¹û
+                }else if( findstring( msg, "+IPERROR: 4" , len ) ){         //éœ€è¦éªŒè¯ç»“æžœ
                     LTE_ABNORMAL_STATE = true;
                     return;
-                }else if( findstring( msg, "+IPERROR: 8" , len ) ){         //lte×´Ì¬Ã¦busy
+                }else if( findstring( msg, "+IPERROR: 8" , len ) ){         //lteçŠ¶æ€å¿™busy
                     LTE_ABNORMAL_STATE = true;
                     return;
                 }else{
@@ -427,11 +427,11 @@ void LteReadySendMsg( void ){
                                 LteSendData( (char *)LTE_SEND_PARA.HANDLE, LTE_SEND_PARA.LEN );
                                 LTE_INFO( "recv > overtime\r\n" );
                             }else{
+                                CMD_STATE = CMD_OK;
                                 MqttReEnterQueue();
                                 LTE_INFO( "send msg overtime\r\n" );
                             }
                         }
-                        CMD_STATE = CMD_OK;
                     }
                     send_timeout = 0;
                 }
