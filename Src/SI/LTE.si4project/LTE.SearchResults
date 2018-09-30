@@ -1,0 +1,3 @@
+---- LteGetInitState Matches (2 in 2 files) ----
+lte.c (Lte) line 116 : bool LteGetInitState( void ){
+lte.h (Lte) line 80 : bool LteGetInitState( void );
