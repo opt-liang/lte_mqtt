@@ -392,7 +392,7 @@ void MqttReEnterQueue( void ){
 void MqttCycle( void const * argument )
 {
 	enum msgTypes mqttmsgType ;
-	char *host = "39.108.231.83";
+	char *host = "192.168.0.1";
 	int port = 1885;
 	
     ListInitiate( &MQTT_QUEUE_LIST );

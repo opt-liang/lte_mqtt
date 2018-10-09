@@ -79,12 +79,12 @@ void LteInit( void ){
 bool ServerAddrConfig( char *ip_address, int serverport, short localport ){
     
     int a, b, c, d;
-    if( sscanf( (const char*)ip_address,"%d.%d.%d.%d",&a,&b,&c,&d) == 0x04 ){
-        if( islegalIP( a, b, c, d  ) == false ){
-            return false;
-        }
+    if( sscanf( (const char*)ip_address,"%d.%d.%d.%d",&a,&b,&c,&d) != 0x04 ){
+        return false;
     }
-    
+    if( islegalIP( a, b, c, d  ) == false ){
+        return false;
+    }
 RECONFIG:
     LTE_CONN_SERVER_CMD[0] = '\0';
     if( sprintf( LTE_CONN_SERVER_CMD, "AT+IPOPEN=1,\"TCP\",\"%s\",%d,%d\r\n", ip_address, serverport, localport ) < 0 ){
@@ -397,9 +397,9 @@ void LteJudgeState( void ){
 
         case QUERYNETWORK:
             if( LTE_STATE.Fields.QUERYNETWORK == NETALREADYOPEN ){
-                    LteChangeState( QUERYTCP, CYCLE );
+                LteChangeState( QUERYTCP, CYCLE );
             }else if( LTE_STATE.Fields.QUERYNETWORK == NETALREADYCLOSE ){
-                    LteChangeState( OPENNETWORK, CYCLE );
+                LteChangeState( OPENNETWORK, CYCLE );
             }
         break;
 
