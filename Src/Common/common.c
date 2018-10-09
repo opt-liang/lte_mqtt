@@ -68,7 +68,17 @@ void LIB_nByteHexTo2Asc(char *asc, uint8_t *hex, uint16_t len)
   }
 }
 
-
+bool islegalIP( int a,int b, int c, int d ){
+    if (a < 0 && a > 255 )
+            return false;
+    if (b < 0 && b > 255 )
+         return false;
+    if (c < 0 && c > 255 )
+            return false;
+    if (d < 0 && d > 255 )
+            return false;
+    return true;
+}
 
 
 

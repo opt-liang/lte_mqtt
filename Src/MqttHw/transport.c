@@ -42,7 +42,7 @@ void MQTT_CONNECT_ABNORMAL_FLAG( void ){
 int transport_open(char* host, int serverport )
 {
     extern void LteInit( void );
-    extern void ServerAddrConfig( char *ip, int serverport, short localport );
+    extern bool ServerAddrConfig( char *ip, int serverport, short localport );
     
     LteInitReSet();
 
@@ -55,28 +55,31 @@ int transport_open(char* host, int serverport )
     
     LteInit();
     
-    ServerAddrConfig( host, serverport, 1001 );
+    if( ServerAddrConfig( host, serverport, 1001 ) ){
+        if( MQTT_CONNECT_ABNORMAL ){
+            MQTT_CONNECT_ABNORMAL = false;
+            LteChangeState( TCPCLOSE, CYCLE );
+        }else{
+            LteChangeState( QUERYNETWORK, CYCLE );
+        }
 
-    if( MQTT_CONNECT_ABNORMAL ){
-        MQTT_CONNECT_ABNORMAL = false;
-        LteChangeState( TCPCLOSE, CYCLE );
+        reboot_times++;
+
+        uint16_t i = 0;
+        while( NET_STATE != NET_CONNECTED && i <= 30000 && !MQTT_CONNECT_ABNORMAL ){
+            osDelay( 1 );
+            i ++ ;
+        }
+        if( NET_STATE == NET_CONNECTED ){
+            reboot_times = 0;
+            return 1;
+        }
+        LteChangeState( CYCLE, CYCLE );
+        return -1;
     }else{
-        LteChangeState( QUERYNETWORK, CYCLE );
+        MQTT_INFO("Server address error\r\n");
+        return -1;
     }
-
-    reboot_times++;
-
-    uint16_t i = 0;
-    while( NET_STATE != NET_CONNECTED && i <= 30000 && !MQTT_CONNECT_ABNORMAL ){
-        osDelay( 1 );
-        i ++ ;
-    }
-    if( NET_STATE == NET_CONNECTED ){
-        reboot_times = 0;
-        return 1;
-    }
-    LteChangeState( CYCLE, CYCLE );
-    return -1;
 }
 
 /*******************************************************************************/
